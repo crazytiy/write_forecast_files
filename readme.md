@@ -1,7 +1,7 @@
 ### write_gribfiles.py
 
-利用本地数据修改grib并保存
-使用条件：
+利用本地数据修改grib并保存  
+使用条件：  
     1.data:本地区域的数据的numpy数组（空间分辨率0.01°），二维（单预报时次）或三维（多预报时次）  
     2.extent:本地区域经纬度范围，需要与data完全对应,格式为(min_lat, max_lat, min_lon, max_lon)  
     使用方法:  
