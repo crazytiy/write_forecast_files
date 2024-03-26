@@ -17,7 +17,7 @@ import pygrib
 from scipy.interpolate import griddata
 from glob import glob
 
-redions={
+regions={
     'HNCS':'长沙市',
     'HNZZ':'株洲市',
     'HNXT':'湘潭市',
@@ -114,7 +114,8 @@ def write_station(ratfile,smgfile,save_path,region,city=None,station_filename='.
             city: 城市，如'长沙市'
             station_filename: 站点信息文件路径，默认'./userdata/stations98.csv'
     '''
-    if city is None:city=redions[region]
+    assert region in regions.keys() ,'region参数错误，请重新输入'
+    if city is None:city=regions[region]
     nowtime=datetime.now()
     nowtime=nowtime.strftime('%Y%m%d%H%M%S')
     #创建一个文本文件并写入
