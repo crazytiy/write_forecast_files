@@ -17,6 +17,28 @@ import pygrib
 from scipy.interpolate import griddata
 from glob import glob
 
+redions={
+    'HNCS':'长沙市',
+    'HNZZ':'株洲市',
+    'HNXT':'湘潭市',
+    'HNUY':'岳阳市',
+    'HNCD':'常德市',
+    'HNZJ':'张家界市',
+    'HNXX':'湘西土家族苗族自治州',
+    'HNHH':'怀化市',
+    'HNYY':'益阳市',
+    'HNSY':'邵阳市',
+    'HNLD':'娄底市',
+    'HNYZ':'永州市',
+    'HNHY':'衡阳市',
+    'HNCZ':'郴州市',
+    'HNXZ':'信息中心',
+    'HNFW':'气象服务中心',
+    'HNKY':'科研所',
+    'HNFY':'湖南分院',
+    'CCCC':'测试'
+    }
+
 # 定义函数read_stadata_from_grib，用于从grib文件中读取数据，并插值到指定的经纬度
 def read_stadata_from_grib(filename,slat,slon):
     '''
@@ -64,10 +86,16 @@ def read_stationinfo(filename,select_city=None):
     # 读取文件
     stations=pd.read_csv(filename,encoding='gbk')
     # 筛选出湘潭市的信息
+    if select_city=='测试':select_city=None
     if select_city is not None:
-        stations=stations.loc[stations['市']==select_city]
-        # 重置索引
-        stations.reset_index(drop=True,inplace=True)
+        if select_city in ['信息中心','气象服务中心','科研所','湖南分院']:
+            stations=stations.loc[stations['市'].isin(['长沙市','株洲市','湘潭市'])]
+            # 重置索引
+            stations.reset_index(drop=True,inplace=True)
+        else:
+            stations=stations.loc[stations['市']==select_city]
+            stations.reset_index(drop=True,inplace=True)
+
     # 获取台站号、纬度和经度
     ids=stations['台站号'].values
     lats=stations['纬度'].values.astype('float')
@@ -86,6 +114,7 @@ def write_station(ratfile,smgfile,save_path,region,city=None,station_filename='.
             city: 城市，如'长沙市'
             station_filename: 站点信息文件路径，默认'./userdata/stations98.csv'
     '''
+    if city is None:city=redions[region]
     nowtime=datetime.now()
     nowtime=nowtime.strftime('%Y%m%d%H%M%S')
     #创建一个文本文件并写入
@@ -102,11 +131,16 @@ def write_station(ratfile,smgfile,save_path,region,city=None,station_filename='.
 
     # 创建文件名，注意文件名时间为北京时，文件内大部分是世界时
     filename=f'Z_NWGD_C_{region}_{nowtime}_P_OGFP-SPFC-STA-{(date+dt.timedelta(hours=8)).strftime("%Y%m%d%H%M")}-02401.txt'
-
     # 连接输出路径和文件名
     filename = os.path.join(save_path, filename)
-    if city is None:str_city='测试'
-    else:str_city=city[:-1]
+    
+    if region not in ['HNXZ','HNFW','HNKY','HNFY','CCCC','HNXX']:
+        str_city=city[:-1]
+    elif region=='HNXX':
+        str_city='湘西州'
+    else:
+        str_city=city
+
     with open(filename, 'w') as f:
         f.write('ZCZC\n')
         f.write(f'FSCI50 {region} {(date+dt.timedelta(hours=8)).strftime("%d%H%M")}\n')
@@ -130,11 +164,11 @@ def write_station(ratfile,smgfile,save_path,region,city=None,station_filename='.
     print(f'{filename} 站点文件写入完成')
 
 if __name__ == '__main__':
-    #设置对流格点预报路径和保存路径（自己生成的格点预报）
+    #设置对流格点预报路径和保存路径（自己生成的格点预报）！！！！！
     source_path='./output'
-    ratfile=glob(os.path.join(source_path,'*-RAT_202403192000*.GRB2'))[0] #短强格点预报路径
-    smgfile=glob(os.path.join(source_path,'*-SMG_202403192000*.GRB2'))[0] #雷暴大风格点预报路径
-    
+    ratfile=glob(os.path.join(source_path,'*-RAT_*.GRB2'))[0] # 修改短强格点预报路径！！！！！
+    smgfile=glob(os.path.join(source_path,'*-SMG_*.GRB2'))[0] # 修改雷暴大风格点预报路径！！！！！
     save_path = './output'
     # 写入强对流数据
-    write_station(ratfile,smgfile,save_path,region='CCCC',city='长沙市')
+    # 修改region为本地区域表示！！！！！
+    write_station(ratfile,smgfile,save_path,region='CCCC')
