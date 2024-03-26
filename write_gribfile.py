@@ -113,7 +113,7 @@ def _write_grib(sdate,data_array,varname,extent,gribfile,OutFile,
                 sel_tmp.monthOfEndOfOverallTimeInterval = int((sdate+dt.timedelta(days=1)).month)
                 sel_tmp.dayOfEndOfOverallTimeInterval = int((sdate+dt.timedelta(days=1)).day)
                 sel_tmp.hourOfEndOfOverallTimeInterval = int((sdate+dt.timedelta(days=1)).hour)
-            else:
+            elif varname in ['R01','SMG','RAT']:
                 sel_tmp.yearOfEndOfOverallTimeInterval = int((sdate+dt.timedelta(hours=i+1)).year)
                 sel_tmp.monthOfEndOfOverallTimeInterval = int((sdate+dt.timedelta(hours=i+1)).month)
                 sel_tmp.dayOfEndOfOverallTimeInterval = int((sdate+dt.timedelta(hours=i+1)).day)
@@ -201,8 +201,8 @@ if __name__ == '__main__':
 
     #设置动态参数（每次必须按此修改）
     sdate='202403192000' # 起报时间，格式为'YYYYMMDDHHMM'
-    data=np.ones((1,201,201)) # 本地区域数据，维度为(时次数,纬向格点数,经向格点数)
-    varname='TMAX' # 变量名称['TMP','TMAX','TMIN','R01','RAT','SMG']
+    data=np.ones((24,201,201)) # 本地区域数据，维度为(时次数,纬向格点数,经向格点数)
+    varname='TMP' # 变量名称['TMP','TMAX','TMIN','R01','RAT','SMG']
     # 开始运行
     check_data(extent,data,varname)
     write_grib(sdate,data,varname,extent,region,sample_path,save_path)
