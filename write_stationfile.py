@@ -144,7 +144,7 @@ def write_station(ratfile,smgfile,save_path,region,city=None,station_filename='.
 
     with open(filename, 'w') as f:
         f.write('ZCZC\n')
-        f.write(f'FSCI50 {region} {(date+dt.timedelta(hours=8)).strftime("%d%H%M")}\n')
+        f.write(f'FSCI50 {region} {date.strftime("%d%H%M")}\n')
         f.write(f'{date.strftime("%Y%m%d%H")}时{str_city}网格竞赛强对流预报产品\n')
         f.write(f'SPCC     {date.strftime("%Y%m%d%H")}\n')
         f.write(f'{len(ids)}\n')
